@@ -6,6 +6,8 @@ import edu.eci.arsw.blueprints.model.Point;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
 import edu.eci.arsw.blueprints.services.BlueprintsServices;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
@@ -22,14 +24,19 @@ public class BlueprintsAPIController {
 
     public BlueprintsAPIController(BlueprintsServices services) { this.services = services; }
 
-    // GET /api/v1/blueprints
+    @Operation(summary = "Obtener todos los blueprints")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista de blueprints")
     @GetMapping
     public ResponseEntity<ApiResponse<Set<Blueprint>>> getAll() {
         Set<Blueprint> all = services.getAllBlueprints();
         return ResponseEntity.ok(new ApiResponse<>(200, "execute ok", all));
     }
 
-    // GET /api/v1/blueprints/{author}
+    @Operation(summary = "Obtener blueprints por autor")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Blueprints del autor"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Autor no encontrado")
+    })
     @GetMapping("/{author}")
     public ResponseEntity<ApiResponse<?>> byAuthor(@PathVariable String author) {
         try {
@@ -40,7 +47,11 @@ public class BlueprintsAPIController {
         }
     }
 
-    // GET /api/v1/blueprints/{author}/{bpname}
+    @Operation(summary = "Obtener un blueprint por autor y nombre")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Blueprint encontrado"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Blueprint no encontrado")
+    })
     @GetMapping("/{author}/{bpname}")
     public ResponseEntity<ApiResponse<?>> byAuthorAndName(@PathVariable String author, @PathVariable String bpname) {
         try {
@@ -51,7 +62,11 @@ public class BlueprintsAPIController {
         }
     }
 
-    // POST /api/v1/blueprints
+    @Operation(summary = "Crear un nuevo blueprint")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Blueprint creado"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Blueprint ya existe")
+    })
     @PostMapping
     public ResponseEntity<ApiResponse<?>> add(@Valid @RequestBody NewBlueprintRequest req) {
         try {
@@ -65,8 +80,12 @@ public class BlueprintsAPIController {
         }
     }
 
-    // PUT /api/v1/blueprints/{author}/{bpname}/points
-    @PutMapping("/{author}/{bpname}/points")
+    @Operation(summary = "Agregar un punto a un blueprint")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "202", description = "Punto agregado"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Blueprint no encontrado")
+    })
+    @PutMapping("/{author}/{bpname}/points") 
     public ResponseEntity<ApiResponse<?>> addPoint(@PathVariable String author, @PathVariable String bpname,
                                                    @RequestBody Point p) {
         try {

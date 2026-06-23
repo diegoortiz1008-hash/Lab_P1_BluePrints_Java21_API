@@ -9,10 +9,11 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI api() {
-        return new OpenAPI().info(new Info()
-                .title("ARSW Blueprints API")
-                .version("v1")
-                .description("Blueprints Laboratory (Java 21 / Spring Boot 3.3.x)"));
+    public OpenAPI blueprintsOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Blueprints API")
+                        .description("API REST para gestión de planos arquitectónicos - ARSW Lab")
+                        .version("v1.0"));
     }
 }
